@@ -1,0 +1,84 @@
+# ============================================
+# Rolling Update Deployment Strategy
+# ============================================
+# Description:
+# - Updates Pods gradually.
+# - Zero downtime deployment.
+# - Default deployment strategy in Kubernetes.
+#
+# Apply:
+# kubectl apply -f rolling-deployment.yaml
+#
+# Verify:
+# kubectl get deployment
+# kubectl get pods
+# kubectl rollout status deployment/nginx-rolling
+#
+# Update Image:
+# kubectl set image deployment/nginx-rolling nginx=nginx:1.26
+#
+# Rollback:
+# kubectl rollout undo deployment/nginx-rolling
+#
+# Rollout History:
+# kubectl rollout history deployment/nginx-rolling
+# ============================================
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: nginx-rolling
+
+spec:
+
+  # Number of Pods
+  replicas: 3
+
+  # Deployment Strategy
+  strategy:
+
+    # RollingUpdate is the default strategy
+    type: RollingUpdate
+
+    rollingUpdate:
+
+      # Maximum extra Pods created during update
+      maxSurge: 1   # 50%
+
+      # Maximum Pods unavailable during update
+      maxUnavailable: 1 # 50%
+      
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+
+      containers:
+
+      - name: nginx
+
+        # Docker Image
+        image: nginx:1.25
+
+        ports:
+
+        # Container listens on Port 80
+        - containerPort: 80
+
+        # CPU and Memory Requests
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+          limits:
+            cpu: "500m"
+            memory: "512Mi"

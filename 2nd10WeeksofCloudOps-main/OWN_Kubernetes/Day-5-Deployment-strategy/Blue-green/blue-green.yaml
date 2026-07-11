@@ -1,0 +1,153 @@
+# ============================================================
+# BLUE-GREEN DEPLOYMENT STRATEGY
+# ============================================================
+#
+# Description:
+# ------------
+# Two identical environments are maintained:
+#
+# Blue  = Current Production Version
+# Green = New Version
+#
+# Initially, the Service points to the Blue Deployment.
+#
+# After testing the Green Deployment, simply change the
+# Service selector from Blue to Green.
+#
+# Downtime:
+# ----------
+# No
+#
+# Advantages:
+# ------------
+# ✔ Zero downtime
+# ✔ Instant rollback
+# ✔ Easy testing before production
+#
+# Disadvantages:
+# ---------------
+# ✘ Double infrastructure cost
+# ✘ Two environments required
+#
+# Apply:
+# kubectl apply -f blue-green.yaml
+#
+# Verify:
+# kubectl get deployment
+# kubectl get pods
+# kubectl get svc
+#
+# ============================================================
+
+# ============================================================
+# BLUE DEPLOYMENT (Current Production)
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: nginx-blue
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: nginx
+      version: blue
+
+  template:
+
+    metadata:
+      labels:
+        app: nginx
+        version: blue
+
+    spec:
+      containers:
+      - name: nginx
+
+        # Current Production Image
+        image: nginx:1.25
+
+        ports:
+        - containerPort: 80
+
+---
+# ============================================================
+# GREEN DEPLOYMENT (New Version)
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: nginx-green
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: nginx
+      version: green
+
+  template:
+
+    metadata:
+      labels:
+        app: nginx
+        version: green
+
+    spec:
+      containers:
+      - name: nginx
+
+        # New Version
+        image: nginx:1.26
+
+        ports:
+        - containerPort: 80
+
+---
+# ============================================================
+# SERVICE
+# Initially pointing to BLUE Deployment
+# ============================================================
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: nginx-service
+
+spec:
+
+  selector:
+    app: nginx
+    version: blue
+
+  ports:
+  - port: 80
+    targetPort: 80
+
+  type: NodePort
+
+# ============================================================
+# TO SWITCH TRAFFIC TO GREEN
+#
+# Change:
+#
+# selector:
+#   app: nginx
+#   version: green
+#
+# Then Apply:
+#
+# kubectl apply -f blue-green.yaml
+#
+# Rollback:
+# Change selector back to BLUE.
+#
+# ============================================================

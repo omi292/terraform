@@ -1,0 +1,82 @@
+# ============================================================
+# NODE SELECTOR
+# ============================================================
+#
+# Description:
+# ------------
+# NodeSelector schedules Pods ONLY on nodes
+# having the specified label.
+#
+# Example:
+#
+# Node Label:
+#
+# disktype=ssd
+#
+# Kubernetes schedules Pods only on
+# nodes having this label.
+#
+# Advantages:
+# -----------
+# ✔ Simple Scheduling
+# ✔ Easy to Configure
+#
+# Apply:
+# kubectl apply -f nodeselector.yaml
+# ADD leble:
+# kubectl label node worker-node1 disktype=ssd
+# Verify the label:
+# kubectl get nodes --show-labels
+#
+# Verify:
+# kubectl get pods -o wide
+#
+# ============================================================
+
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: nginx-nodeselector
+
+spec:
+
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+
+      # Schedule Pods only on nodes
+      # having this label.
+      nodeSelector:
+
+        disktype: ssd
+
+      containers:
+
+      - name: nginx
+
+        image: nginx:latest
+
+        ports:
+        - containerPort: 80
+
+        resources:
+
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+          limits:
+            cpu: "500m"
+            memory: "512Mi"

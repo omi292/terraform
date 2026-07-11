@@ -1,0 +1,74 @@
+# ============================================================
+# DAEMONSET
+# ============================================================
+#
+# Description:
+# ------------
+# A DaemonSet ensures that ONE Pod runs on EVERY node.
+#
+# Whenever a new node joins the cluster,
+# Kubernetes automatically creates a Pod on it.
+#
+# If a node is removed,
+# the Pod on that node is also removed.
+#
+# Use Cases:
+# ----------
+# ✔ Fluentd
+# ✔ Prometheus Node Exporter
+# ✔ Filebeat
+# ✔ Monitoring Agents
+# ✔ Log Collection
+# ✔ Antivirus Agents
+#
+# Apply:
+# kubectl apply -f daemonset.yaml
+#
+# Verify:
+# kubectl get daemonset
+# kubectl get pods -o wide
+#
+# Delete:
+# kubectl delete -f daemonset.yaml
+#
+# ============================================================
+
+apiVersion: apps/v1
+
+kind: DaemonSet
+
+metadata:
+  name: nginx-daemonset
+
+spec:
+
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+
+      containers:
+
+      - name: nginx
+
+        image: nginx:latest
+
+        ports:
+        - containerPort: 80
+
+        resources:
+
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+          limits:
+            cpu: "500m"
+            memory: "512Mi"

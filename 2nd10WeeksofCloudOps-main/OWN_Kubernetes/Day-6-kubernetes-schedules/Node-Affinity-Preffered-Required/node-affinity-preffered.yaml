@@ -1,0 +1,80 @@
+# ============================================================
+# NODE AFFINITY (PREFERRED)
+# ============================================================
+#
+# Description:
+# ------------
+# Preferred Node Affinity is a SOFT rule.
+#
+# Kubernetes will TRY to schedule the Pod
+# on nodes matching the given label.
+#
+# If no matching node is found,
+# the Pod will still be scheduled
+# on another available node.
+#
+# Apply:
+# kubectl apply -f node-affinity-preferred.yaml
+#
+# Verify:
+# kubectl get pods -o wide
+#
+# Check Labels:
+# kubectl get nodes --show-labels
+#
+# ============================================================
+
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: nginx-preferred-affinity
+
+spec:
+
+  # Number of Pods
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+
+      affinity:
+
+        nodeAffinity:
+
+          # Soft Rule
+          preferredDuringSchedulingIgnoredDuringExecution:  # requiredDuringSchedulingIgnoredDuringExecution
+
+          - weight: 100
+
+            preference:
+
+              matchExpressions:
+
+              - key: disktype
+
+                operator: In
+
+                values:
+                - ssd
+
+      containers:
+
+      - name: nginx
+
+        image: nginx:latest
+
+        ports:
+        - containerPort: 80
+
+        ##
