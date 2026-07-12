@@ -1,10 +1,10 @@
-apiVersion: v1
-kind: Pod
-metadata:
-  name: web-server-1
-spec:
-  restartPolicy: Always  # Container restarts regardless of exit code
-  containers:
-  - name: nginx
-    image: nginx:1.14.2
-    # If this container crashes or exits for any reason, it will be restarted
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: web-server-1
+# spec:
+#   restartPolicy: Always  # Container restarts regardless of exit code
+#   containers:
+#   - name: nginx
+#     image: nginx:1.14.2
+#     # If this container crashes or exits for any reason, it will be restarted
